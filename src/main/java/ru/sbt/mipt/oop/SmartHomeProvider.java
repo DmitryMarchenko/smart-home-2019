@@ -1,4 +1,7 @@
 package ru.sbt.mipt.oop;
 
-public class SmartHomeProvider {
+import java.io.IOException;
+
+public interface SmartHomeProvider {
+    SmartHome getSmartHome() throws IOException;
 }
