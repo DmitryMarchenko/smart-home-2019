@@ -1,4 +1,4 @@
-package ru.sbt.mipt.oop.randomstopstrategy;
+package ru.sbt.mipt.oop.stopstrategy;
 
 import ru.sbt.mipt.oop.TimelineStopper;
 

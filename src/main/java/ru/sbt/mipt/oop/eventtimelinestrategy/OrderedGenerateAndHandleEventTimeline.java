@@ -3,16 +3,18 @@ package ru.sbt.mipt.oop.eventtimelinestrategy;
 import ru.sbt.mipt.oop.*;
 import ru.sbt.mipt.oop.event.SensorEvent;
 
+import java.util.Collection;
+
 public class OrderedGenerateAndHandleEventTimeline implements EventTimeline {
     private final SensorEventGenerator eventGenerator;
-    private final SensorEventHandler eventHandler;
+    private final Collection<SensorEventHandler> eventHandlers;
     private final TimelineStopper stopper;
 
     public OrderedGenerateAndHandleEventTimeline(SensorEventGenerator eventGenerator,
-                                                 SensorEventHandler eventHandler,
+                                                 Collection<SensorEventHandler> eventHandlers,
                                                  TimelineStopper stopper) {
         this.eventGenerator = eventGenerator;
-        this.eventHandler = eventHandler;
+        this.eventHandlers = eventHandlers;
         this.stopper = stopper;
     }
 
@@ -20,7 +22,10 @@ public class OrderedGenerateAndHandleEventTimeline implements EventTimeline {
     public void process() {
         while (!stopper.stop()) {
             SensorEvent event = eventGenerator.getNextSensorEvent();
-            eventHandler.handle(event);
+            System.out.println("Got event: " + event);
+            for (SensorEventHandler eventHandler: eventHandlers) {
+                eventHandler.handle(event);
+            }
         }
     }
 }

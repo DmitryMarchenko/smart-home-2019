@@ -1,4 +1,4 @@
-package ru.sbt.mipt.oop.randomgeneratestrategy;
+package ru.sbt.mipt.oop.generatestrategy;
 
 import ru.sbt.mipt.oop.event.SensorEvent;
 import ru.sbt.mipt.oop.SensorEventGenerator;
