@@ -1,6 +1,6 @@
 package ru.sbt.mipt.oop.event;
 
-public class SensorEvent {
+public class SensorEvent implements Event {
     private final SensorEventType type;
     private final String objectId;
 

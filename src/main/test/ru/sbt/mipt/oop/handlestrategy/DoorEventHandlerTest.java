@@ -7,8 +7,6 @@ import ru.sbt.mipt.oop.event.SensorEvent;
 import ru.sbt.mipt.oop.event.SensorEventType;
 import ru.sbt.mipt.oop.json.JsonSmartHomeReader;
 import ru.sbt.mipt.oop.smarthomeobjects.Door;
-import ru.sbt.mipt.oop.smarthomeobjects.Light;
-import ru.sbt.mipt.oop.smarthomeobjects.Room;
 
 import java.io.IOException;
 
@@ -16,23 +14,41 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DoorEventHandlerTest {
 
+    private void eventForEachDoor(SmartHome smartHome,
+                                  DoorEventHandler doorEventHandler, SensorEventType doorOpen) {
+        smartHome.execute(obj -> {
+            if (!(obj instanceof Door)) {
+                return;
+            }
+            Door door = (Door) obj;
+            SensorEvent event = new SensorEvent(doorOpen, door.getId());
+            doorEventHandler.handle(event);
+        });
+    }
+
+    private void checkAllDoors(SmartHome smartHome, boolean mode) {
+        smartHome.execute(obj -> {
+            if (!(obj instanceof Door)) {
+                return;
+            }
+            Door door = (Door) obj;
+            if (mode) {
+                assertTrue(door.isOpen());
+            } else {
+                assertFalse(door.isOpen());
+            }
+        });
+    }
+
     @Test
     void openAllDoors() {
         SmartHomeProvider provider = new JsonSmartHomeReader("smart-home-1.js");
         try {
             SmartHome smartHome = provider.getSmartHome();
-            DoorEventHandler lightEventHandler = new DoorEventHandler(smartHome);
-            for (Room room: smartHome.getRooms()) {
-                for (Door door: room.getDoors()) {
-                    SensorEvent event = new SensorEvent(SensorEventType.DOOR_OPEN, door.getId());
-                    lightEventHandler.handle(event);
-                }
-            }
-            for (Room room: smartHome.getRooms()) {
-                for (Door door: room.getDoors()) {
-                    assertTrue(door.isOpen());
-                }
-            }
+            DoorEventHandler doorEventHandler = new DoorEventHandler(smartHome);
+            eventForEachDoor(smartHome, doorEventHandler, SensorEventType.DOOR_OPEN);
+
+            checkAllDoors(smartHome, true);
         } catch (IOException exc) {
             System.out.println("File reading error!");
             assert(false);
@@ -44,18 +60,10 @@ class DoorEventHandlerTest {
         SmartHomeProvider provider = new JsonSmartHomeReader("smart-home-1.js");
         try {
             SmartHome smartHome = provider.getSmartHome();
-            DoorEventHandler lightEventHandler = new DoorEventHandler(smartHome);
-            for (Room room: smartHome.getRooms()) {
-                for (Door door: room.getDoors()) {
-                    SensorEvent event = new SensorEvent(SensorEventType.DOOR_CLOSED, door.getId());
-                    lightEventHandler.handle(event);
-                }
-            }
-            for (Room room: smartHome.getRooms()) {
-                for (Door door: room.getDoors()) {
-                    assertFalse(door.isOpen());
-                }
-            }
+            DoorEventHandler doorEventHandler = new DoorEventHandler(smartHome);
+            eventForEachDoor(smartHome, doorEventHandler, SensorEventType.DOOR_CLOSED);
+
+            checkAllDoors(smartHome, false);
         } catch (IOException exc) {
             System.out.println("File reading error!");
             assert(false);

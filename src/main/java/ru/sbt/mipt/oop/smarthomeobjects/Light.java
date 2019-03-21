@@ -2,7 +2,6 @@ package ru.sbt.mipt.oop.smarthomeobjects;
 
 import ru.sbt.mipt.oop.Action;
 import ru.sbt.mipt.oop.Actionable;
-import ru.sbt.mipt.oop.event.SensorEventType;
 
 public class Light implements Actionable {
     private boolean isOn;
@@ -27,16 +26,6 @@ public class Light implements Actionable {
 
     @Override
     public void execute(Action action) {
-        if (!id.equals(action.getObjectId())) {
-            return;
-        }
-        if (action.getEventType() == SensorEventType.LIGHT_ON) {
-            this.setOn(true);
-            System.out.println("Light " + this.getId() + " was turned on.");
-        }
-        if (action.getEventType() == SensorEventType.LIGHT_OFF) {
-            this.setOn(false);
-            System.out.println("Light " + this.getId() + " was turned off.");
-        }
+        action.execute(this);
     }
 }

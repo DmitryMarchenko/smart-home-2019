@@ -28,7 +28,7 @@ public class HomeBuilder {
         Room hall = new Room(Arrays.asList(new Light("7", false), new Light("8", false), new Light("9", false)),
                 Arrays.asList(new Door(false, "4")),
                 "hall");
-        SmartHome smartHome = new SmartHome(Arrays.asList(kitchen, bathroom, bedroom, hall));
+    SmartHome smartHome = new SmartHome(Arrays.asList(kitchen, bathroom, bedroom, hall));
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String jsonString = gson.toJson(smartHome);
         System.out.println(jsonString);
