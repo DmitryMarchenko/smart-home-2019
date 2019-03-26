@@ -22,7 +22,7 @@ public class AlarmDecorator implements EventHandler {
     @Override
     public void handle(Event event) {
         if (smartHome.getAlarmState() instanceof ActiveAlarmState && event instanceof SensorEvent) {
-            smartHome.alarmTurnOn();
+            smartHome.getAlarm().alarmTurnOn();
             notifier.notify("Alarm!!!");
         } else if (smartHome.getAlarmState() instanceof TurnOnAlarmState) {
             notifier.notify("Alarm!!!");

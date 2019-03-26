@@ -9,8 +9,6 @@ import ru.sbt.mipt.oop.event.SensorEventType;
 import ru.sbt.mipt.oop.json.JsonSmartHomeReader;
 import ru.sbt.mipt.oop.smarthomeobjects.Light;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class HallDoorEventHandlerTest {
@@ -45,32 +43,23 @@ class HallDoorEventHandlerTest {
     @Test
     void closeHallDoorWhenAllLightsTurnOn() {
         SmartHomeProvider provider = new JsonSmartHomeReader("smart-home-1.js");
-        try {
-            SmartHome smartHome = provider.getSmartHome();
-            LightEventHandler lightEventHandler = new LightEventHandler(smartHome);
-            eventForEachLight(smartHome, lightEventHandler, SensorEventType.LIGHT_ON);
-            HallDoorEventHandler hallDoorEventHandler = new HallDoorEventHandler(smartHome, new PrintCommandSender());
-            closeHallDoor(hallDoorEventHandler);
-            checkAllLights(smartHome);
-        } catch (IOException exc) {
-            System.out.println("File reading error!");
-            assert(false);
-        }
+        SmartHome smartHome = provider.getSmartHome();
+        LightEventHandler lightEventHandler = new LightEventHandler(smartHome);
+        eventForEachLight(smartHome, lightEventHandler, SensorEventType.LIGHT_ON);
+        HallDoorEventHandler hallDoorEventHandler = new HallDoorEventHandler(smartHome, new PrintCommandSender());
+        closeHallDoor(hallDoorEventHandler);
+        checkAllLights(smartHome);
     }
 
     @Test
     void closeHallDoorWhenAllLightsTurnOff() {
         SmartHomeProvider provider = new JsonSmartHomeReader("smart-home-1.js");
-        try {
-            SmartHome smartHome = provider.getSmartHome();
-            LightEventHandler lightEventHandler = new LightEventHandler(smartHome);
-            eventForEachLight(smartHome, lightEventHandler, SensorEventType.LIGHT_OFF);
-            HallDoorEventHandler hallDoorEventHandler = new HallDoorEventHandler(smartHome, new PrintCommandSender());
-            closeHallDoor(hallDoorEventHandler);
-            checkAllLights(smartHome);
-        } catch (IOException exc) {
-            System.out.println("File reading error!");
-            assert(false);
-        }
+        SmartHome smartHome = provider.getSmartHome();
+        LightEventHandler lightEventHandler = new LightEventHandler(smartHome);
+        eventForEachLight(smartHome, lightEventHandler, SensorEventType.LIGHT_OFF);
+        HallDoorEventHandler hallDoorEventHandler = new HallDoorEventHandler(smartHome, new PrintCommandSender());
+        closeHallDoor(hallDoorEventHandler);
+        checkAllLights(smartHome);
+
     }
 }

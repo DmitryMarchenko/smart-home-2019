@@ -8,8 +8,6 @@ import ru.sbt.mipt.oop.event.SensorEventType;
 import ru.sbt.mipt.oop.json.JsonSmartHomeReader;
 import ru.sbt.mipt.oop.smarthomeobjects.Door;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class DoorEventHandlerTest {
@@ -43,30 +41,20 @@ class DoorEventHandlerTest {
     @Test
     void openAllDoors() {
         SmartHomeProvider provider = new JsonSmartHomeReader("smart-home-1.js");
-        try {
-            SmartHome smartHome = provider.getSmartHome();
-            DoorEventHandler doorEventHandler = new DoorEventHandler(smartHome);
-            eventForEachDoor(smartHome, doorEventHandler, SensorEventType.DOOR_OPEN);
+        SmartHome smartHome = provider.getSmartHome();
+        DoorEventHandler doorEventHandler = new DoorEventHandler(smartHome);
+        eventForEachDoor(smartHome, doorEventHandler, SensorEventType.DOOR_OPEN);
 
-            checkAllDoors(smartHome, true);
-        } catch (IOException exc) {
-            System.out.println("File reading error!");
-            assert(false);
-        }
+        checkAllDoors(smartHome, true);
     }
 
     @Test
     void closeAllDoors() {
         SmartHomeProvider provider = new JsonSmartHomeReader("smart-home-1.js");
-        try {
-            SmartHome smartHome = provider.getSmartHome();
-            DoorEventHandler doorEventHandler = new DoorEventHandler(smartHome);
-            eventForEachDoor(smartHome, doorEventHandler, SensorEventType.DOOR_CLOSED);
+        SmartHome smartHome = provider.getSmartHome();
+        DoorEventHandler doorEventHandler = new DoorEventHandler(smartHome);
+        eventForEachDoor(smartHome, doorEventHandler, SensorEventType.DOOR_CLOSED);
 
-            checkAllDoors(smartHome, false);
-        } catch (IOException exc) {
-            System.out.println("File reading error!");
-            assert(false);
-        }
+        checkAllDoors(smartHome, false);
     }
 }

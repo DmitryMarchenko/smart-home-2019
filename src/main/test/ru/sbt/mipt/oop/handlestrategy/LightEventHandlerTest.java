@@ -7,8 +7,6 @@ import ru.sbt.mipt.oop.event.SensorEventType;
 import ru.sbt.mipt.oop.json.JsonSmartHomeReader;
 import ru.sbt.mipt.oop.smarthomeobjects.Light;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class LightEventHandlerTest {
@@ -42,30 +40,20 @@ class LightEventHandlerTest {
     @org.junit.jupiter.api.Test
     void turnOnAllLights() {
         SmartHomeProvider provider = new JsonSmartHomeReader("smart-home-1.js");
-        try {
-            SmartHome smartHome = provider.getSmartHome();
-            LightEventHandler lightEventHandler = new LightEventHandler(smartHome);
-            eventForEachLight(smartHome, lightEventHandler, SensorEventType.LIGHT_ON);
+        SmartHome smartHome = provider.getSmartHome();
+        LightEventHandler lightEventHandler = new LightEventHandler(smartHome);
+        eventForEachLight(smartHome, lightEventHandler, SensorEventType.LIGHT_ON);
 
-            checkAllLights(smartHome, true);
-        } catch (IOException exc) {
-            System.out.println("File reading error!");
-            assert(false);
-        }
+        checkAllLights(smartHome, true);
     }
 
     @org.junit.jupiter.api.Test
     void turnOffAllLights() {
         SmartHomeProvider provider = new JsonSmartHomeReader("smart-home-1.js");
-        try {
-            SmartHome smartHome = provider.getSmartHome();
-            LightEventHandler lightEventHandler = new LightEventHandler(smartHome);
-            eventForEachLight(smartHome, lightEventHandler, SensorEventType.LIGHT_OFF);
+        SmartHome smartHome = provider.getSmartHome();
+        LightEventHandler lightEventHandler = new LightEventHandler(smartHome);
+        eventForEachLight(smartHome, lightEventHandler, SensorEventType.LIGHT_OFF);
 
-            checkAllLights(smartHome, false);
-        } catch (IOException exc) {
-            System.out.println("File reading error!");
-            assert(false);
-        }
+        checkAllLights(smartHome, false);
     }
 }

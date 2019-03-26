@@ -16,9 +16,14 @@ public class JsonSmartHomeReader implements SmartHomeProvider {
     }
 
     @Override
-    public SmartHome getSmartHome() throws IOException {
+    public SmartHome getSmartHome(){
         Gson gson = new Gson();
-        String json = new String(Files.readAllBytes(Paths.get(this.filename)));
+        String json = null;
+        try {
+            json = new String(Files.readAllBytes(Paths.get(this.filename)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return gson.fromJson(json, SmartHome.class);
     }
 }

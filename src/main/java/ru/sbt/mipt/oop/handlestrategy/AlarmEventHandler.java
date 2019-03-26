@@ -20,9 +20,9 @@ public class AlarmEventHandler implements EventHandler {
         }
         AlarmEvent alarmEvent = (AlarmEvent) event;
         if (alarmEvent.getType() == AlarmEventType.ALARM_ACTIVATE) {
-            smartHome.activate(alarmEvent.getCode());
+            smartHome.getAlarm().activate(alarmEvent.getCode());
         } else if (alarmEvent.getType() == AlarmEventType.ALARM_DEACTIVATE){
-            smartHome.deactivate(alarmEvent.getCode());
+            smartHome.getAlarm().deactivate(alarmEvent.getCode());
         }
     }
 }
