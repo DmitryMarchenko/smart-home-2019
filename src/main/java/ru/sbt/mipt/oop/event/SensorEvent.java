@@ -9,6 +9,11 @@ public class SensorEvent implements Event {
         this.objectId = objectId;
     }
 
+    public SensorEvent() {
+        type = SensorEventType.DOOR_CLOSED;
+        objectId = "";
+    }
+
     public SensorEventType getType() {
         return type;
     }
