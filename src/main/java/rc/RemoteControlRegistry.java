@@ -11,5 +11,4 @@ public class RemoteControlRegistry {
     public void registerRemoteControl(RemoteControl remoteControl, String rcId) {
         // here goes some library code which registers our remote control with given ID (rcId)
     }
-
 }
