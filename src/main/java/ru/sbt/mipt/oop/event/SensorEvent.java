@@ -10,7 +10,7 @@ public class SensorEvent implements Event {
     }
 
     public SensorEvent() {
-        type = SensorEventType.DOOR_CLOSED;
+        type = null;
         objectId = "";
     }
 

@@ -4,15 +4,14 @@ import com.coolcompany.smarthome.events.CCSensorEvent;
 import ru.sbt.mipt.oop.event.SensorEvent;
 import ru.sbt.mipt.oop.event.SensorEventType;
 
-public class CCSensorEventToSensorEventAdapter extends SensorEvent {
+public class CCSensorEventToSensorEventAdapter {
     private final CCSensorEvent ccSensorEvent;
 
     public CCSensorEventToSensorEventAdapter(CCSensorEvent ccSensorEvent) {
         this.ccSensorEvent = ccSensorEvent;
     }
 
-    @Override
-    public SensorEventType getType() {
+    private SensorEventType getType() {
         switch (ccSensorEvent.getEventType()) {
             case "LightIsOn" : return SensorEventType.LIGHT_ON;
             case "LightIsOff" : return SensorEventType.LIGHT_OFF;
@@ -22,8 +21,11 @@ public class CCSensorEventToSensorEventAdapter extends SensorEvent {
         }
     }
 
-    @Override
-    public String getObjectId() {
+    private String getObjectId() {
         return ccSensorEvent.getObjectId();
+    }
+
+    public SensorEvent getSensorEvent() {
+        return new SensorEvent(getType(), getObjectId());
     }
 }
