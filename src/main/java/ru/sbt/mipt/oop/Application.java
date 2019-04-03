@@ -1,80 +1,51 @@
 package ru.sbt.mipt.oop;
 
-import com.google.gson.Gson;
+import ru.sbt.mipt.oop.commandsendstrategy.PrintCommandSender;
+import ru.sbt.mipt.oop.decorators.AlarmDecorator;
+import ru.sbt.mipt.oop.eventtimelinestrategy.OrderedGenerateAndHandleEventTimeline;
+import ru.sbt.mipt.oop.generatestrategy.RandomChooseForNextAlarmEvent;
+import ru.sbt.mipt.oop.generatestrategy.RandomChooseForNextEvent;
+import ru.sbt.mipt.oop.generatestrategy.RandomChooseForNextSensorEvent;
+import ru.sbt.mipt.oop.handlestrategy.AlarmEventHandler;
+import ru.sbt.mipt.oop.handlestrategy.DoorEventHandler;
+import ru.sbt.mipt.oop.handlestrategy.HallDoorEventHandler;
+import ru.sbt.mipt.oop.handlestrategy.LightEventHandler;
+import ru.sbt.mipt.oop.json.JsonSmartHomeReader;
+import ru.sbt.mipt.oop.notify.Notifier;
+import ru.sbt.mipt.oop.notify.SMSNotifier;
+import ru.sbt.mipt.oop.stopstrategy.ProbabilisticStopper;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import static ru.sbt.mipt.oop.SensorEventType.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 public class Application {
 
     public static void main(String... args) throws IOException {
-        // считываем состояние дома из файла
-        Gson gson = new Gson();
-        String json = new String(Files.readAllBytes(Paths.get("smart-home-1.js")));
-        SmartHome smartHome = gson.fromJson(json, SmartHome.class);
+        SmartHomeProvider provider = new JsonSmartHomeReader("smart-home-1.js");
+        SmartHome smartHome = provider.getSmartHome();
+        CommandSender commandSender = new PrintCommandSender();
+        Collection<EventHandler> eventHandlers = configureEventHandlers(smartHome, commandSender);
+        EventTimeline eventTimeline = new OrderedGenerateAndHandleEventTimeline(
+                new RandomChooseForNextEvent(Arrays.asList(new RandomChooseForNextSensorEvent(),
+                        new RandomChooseForNextAlarmEvent())),
+                eventHandlers,
+                new ProbabilisticStopper(0.05)
+        );
+
         // начинаем цикл обработки событий
-        SensorEvent event = getNextSensorEvent();
-        while (event != null) {
-            System.out.println("Got event: " + event);
-            if (event.getType() == LIGHT_ON || event.getType() == LIGHT_OFF) {
-                // событие от источника света
-                for (Room room : smartHome.getRooms()) {
-                    for (Light light : room.getLights()) {
-                        if (light.getId().equals(event.getObjectId())) {
-                            if (event.getType() == LIGHT_ON) {
-                                light.setOn(true);
-                                System.out.println("Light " + light.getId() + " in room " + room.getName() + " was turned on.");
-                            } else {
-                                light.setOn(false);
-                                System.out.println("Light " + light.getId() + " in room " + room.getName() + " was turned off.");
-                            }
-                        }
-                    }
-                }
-            }
-            if (event.getType() == DOOR_OPEN || event.getType() == DOOR_CLOSED) {
-                // событие от двери
-                for (Room room : smartHome.getRooms()) {
-                    for (Door door : room.getDoors()) {
-                        if (door.getId().equals(event.getObjectId())) {
-                            if (event.getType() == DOOR_OPEN) {
-                                door.setOpen(true);
-                                System.out.println("Door " + door.getId() + " in room " + room.getName() + " was opened.");
-                            } else {
-                                door.setOpen(false);
-                                System.out.println("Door " + door.getId() + " in room " + room.getName() + " was closed.");
-                                // если мы получили событие о закрытие двери в холле - это значит, что была закрыта входная дверь.
-                                // в этом случае мы хотим автоматически выключить свет во всем доме (это же умный дом!)
-                                if (room.getName().equals("hall")) {
-                                    for (Room homeRoom : smartHome.getRooms()) {
-                                        for (Light light : homeRoom.getLights()) {
-                                            light.setOn(false);
-                                            SensorCommand command = new SensorCommand(CommandType.LIGHT_OFF, light.getId());
-                                            sendCommand(command);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            event = getNextSensorEvent();
-        }
+        eventTimeline.process();
     }
 
-    private static void sendCommand(SensorCommand command) {
-        System.out.println("Pretent we're sending command " + command);
-    }
-
-    private static SensorEvent getNextSensorEvent() {
-        // pretend like we're getting the events from physical world, but here we're going to just generate some random events
-        if (Math.random() < 0.05) return null; // null means end of event stream
-        SensorEventType sensorEventType = SensorEventType.values()[(int) (4 * Math.random())];
-        String objectId = "" + ((int) (10 * Math.random()));
-        return new SensorEvent(sensorEventType, objectId);
+    private static Collection<EventHandler> configureEventHandlers(SmartHome smartHome,
+                                                                   CommandSender commandSender) {
+        Collection<EventHandler> eventHandlers = new ArrayList<>();
+        Notifier notifier = new SMSNotifier();
+        eventHandlers.add(new AlarmDecorator(new LightEventHandler(smartHome), smartHome, notifier));
+        eventHandlers.add(new AlarmDecorator(new DoorEventHandler(smartHome), smartHome, notifier));
+        eventHandlers.add(new AlarmDecorator(new HallDoorEventHandler(smartHome, commandSender), smartHome, notifier));
+        eventHandlers.add(new AlarmEventHandler(smartHome));
+        return eventHandlers;
     }
 }
