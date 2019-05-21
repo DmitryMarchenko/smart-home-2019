@@ -2,6 +2,6 @@ package ru.sbt.mipt.oop.remotecontrol;
 
 import ru.sbt.mipt.oop.SmartHome;
 
-public interface RCCommand {
+public interface Command {
     void execute(SmartHome smartHome);
 }

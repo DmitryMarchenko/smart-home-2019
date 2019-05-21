@@ -3,7 +3,7 @@ package ru.sbt.mipt.oop.remotecontrol;
 import ru.sbt.mipt.oop.SmartHome;
 import ru.sbt.mipt.oop.smarthomeobjects.Light;
 
-public class TurnOnAllLightsCommand implements RCCommand {
+public class TurnOnAllLightsCommand implements Command {
     @Override
     public void execute(SmartHome smartHome) {
         smartHome.execute(obj -> {
